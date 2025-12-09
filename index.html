@@ -1,11 +1,421 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <title>Schwimmspaß – Navigation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root {
+      --blue-dark: #004f9f;
+      --blue-text: #003366;
+      --orange: #ff7a32;
+      --orange-dark: #f05a10;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--blue-text);
+      background: #f5f7fb;
+    }
+
+    /* Hero-Hintergrund nur Demo */
+    .hero {
+      min-height: 100vh;
+      background: url("https://images.pexels.com/photos/248885/pexels-photo-248885.jpeg?auto=compress&cs=tinysrgb&w=1600") center/cover no-repeat;
+      position: relative;
+    }
+
+    /* Overlay, damit das Menü lesbar ist */
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 40, 80, 0.75),
+        rgba(0, 40, 80, 0.4)
+      );
+    }
+
+    /* ===== NAVBAR ===== */
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .nav-bar {
+      position: relative;
+      z-index: 60;
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* halbtransparente Leiste wie auf dem Screenshot */
+    .nav-bar-bg {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(12px);
+      border-radius: 999px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+      z-index: -1;
+    }
+
+    /* Logo-Bereich */
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-mark {
+      width: 58px;
+      height: 28px;
+      background: linear-gradient(135deg, #009fe3, #004f9f);
+      border-radius: 999px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo-mark::before,
+    .logo-mark::after {
+      content: "";
+      position: absolute;
+      width: 120%;
+      height: 70%;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.9);
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .logo-mark::before {
+      left: -20%;
+    }
+
+    .logo-mark::after {
+      left: 10%;
+    }
+
+    .logo-text {
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 1.1;
+      color: var(--blue-text);
+    }
+
+    .logo-text span {
+      display: block;
+      font-weight: 500;
+      font-size: 11px;
+    }
+
+    /* ===== Desktop-Menü ===== */
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .nav-link {
+      position: relative;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      color: #455a7a;
+      padding: 4px 0;
+      transition: color 0.2s ease;
+    }
+
+    .nav-link::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 0;
+      height: 3px;
+      border-radius: 999px;
+      background: var(--orange);
+      transition: width 0.2s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--blue-dark);
+    }
+
+    .nav-link:hover::after,
+    .nav-link.active::after {
+      width: 100%;
+    }
+
+    /* Call-to-Action rechts */
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .btn-call {
+      border: none;
+      cursor: pointer;
+      padding: 10px 26px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+      color: var(--white);
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 12px 30px rgba(240, 90, 16, 0.4);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-call:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 40px rgba(240, 90, 16, 0.5);
+    }
+
+    /* ===== Hamburger ===== */
+
+    .hamburger {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .hamburger-box {
+      width: 22px;
+      height: 16px;
+      position: relative;
+    }
+
+    .hamburger-line {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      border-radius: 999px;
+      background: var(--blue-text);
+      transition: transform 0.2s ease, top 0.2s ease, opacity 0.2s ease;
+    }
+
+    .hamburger-line:nth-child(1) {
+      top: 0;
+    }
+
+    .hamburger-line:nth-child(2) {
+      top: 7px;
+    }
+
+    .hamburger-line:nth-child(3) {
+      top: 14px;
+    }
+
+    .hamburger.is-active .hamburger-line:nth-child(1) {
+      top: 7px;
+      transform: rotate(45deg);
+    }
+
+    .hamburger.is-active .hamburger-line:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.is-active .hamburger-line:nth-child(3) {
+      top: 7px;
+      transform: rotate(-45deg);
+    }
+
+    /* ===== RESPONSIVE ===== */
+
+    @media (max-width: 900px) {
+      .nav-bar {
+        padding-inline: 18px;
+      }
+
+      .nav-center {
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        top: 68px;
+        flex-direction: column;
+        align-items: flex-start;
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 18px;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+        padding: 14px 18px;
+        display: none; /* initial versteckt */
+      }
+
+      .nav-center.nav-open {
+        display: flex;
+      }
+
+      .nav-link {
+        padding: 6px 0;
+        font-size: 15px;
+      }
+
+      .nav-right {
+        gap: 8px;
+      }
+
+      .btn-call {
+        padding-inline: 18px;
+        font-size: 13px;
+      }
+
+      .hamburger {
+        display: inline-flex;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .nav-right {
+        display: none; /* nur im Burger-Menü */
+      }
+
+      .nav-center {
+        padding-top: 10px;
+      }
+
+      .nav-center::after {
+        content: " ";
+        display: block;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        margin-top: 4px;
+      }
+
+      .nav-center .btn-call-mobile {
+        margin-top: 8px;
+      }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 180px 32px 80px;
+      color: #fff;
+    }
+
+    .hero-content h1 {
+      font-size: clamp(32px, 5vw, 44px);
+      max-width: 10ch;
+    }
+  </style>
 </head>
 <body>
-    <h1>Schwimmspass GMBH</h1>
+  <div class="hero">
+    <header>
+      <div class="nav-bar">
+        <div class="nav-bar-bg"></div>
+
+        <!-- Logo links -->
+        <div class="nav-left">
+          <div class="logo-mark"></div>
+          <div class="logo-text">
+            Schwimmspaß GmbH
+            <span>in Wasserland</span>
+          </div>
+        </div>
+
+        <!-- Menü -->
+        <nav class="nav-center" id="mainNav">
+          <a href="#home" class="nav-link active">Home</a>
+          <a href="#news" class="nav-link">News</a>
+          <a href="#angebote" class="nav-link">Angebote &amp; Events</a>
+          <a href="#zeiten" class="nav-link">Öffnungszeiten &amp; Preise</a>
+          <a href="#kontakt" class="nav-link">Kontakt</a>
+
+          <!-- Call-To-Action für Mobile im ausgeklappten Menü -->
+          <button class="btn-call btn-call-mobile" onclick="callNow()">
+            Jetzt Anrufen
+          </button>
+        </nav>
+
+        <!-- Call-To-Action rechts (Desktop) -->
+        <div class="nav-right">
+          <button class="btn-call" onclick="callNow()">Jetzt Anrufen</button>
+        </div>
+
+        <!-- Hamburger -->
+        <button
+          class="hamburger"
+          id="hamburgerButton"
+          aria-label="Menü öffnen oder schließen"
+          aria-expanded="false"
+        >
+          <div class="hamburger-box">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+          </div>
+        </button>
+      </div>
+    </header>
+
+    <!-- Nur Demo-Content -->
+    <div class="hero-content" id="home">
+      <h1>Einfach gemeinsam abtauchen</h1>
+    </div>
+  </div>
+
+  <script>
+    // Hamburger-Menü ein/aus
+    const hamburgerBtn = document.getElementById("hamburgerButton");
+    const mainNav = document.getElementById("mainNav");
+    const navLinks = document.querySelectorAll(".nav-link");
+
+    function toggleMenu() {
+      mainNav.classList.toggle("nav-open");
+      hamburgerBtn.classList.toggle("is-active");
+
+      const isOpen = mainNav.classList.contains("nav-open");
+      hamburgerBtn.setAttribute("aria-expanded", String(isOpen));
+    }
+
+    hamburgerBtn.addEventListener("click", toggleMenu);
+
+    // Beim Klick auf einen Menüpunkt: Menü schließen (auf Mobile)
+    navLinks.forEach((link) => {
+      link.addEventListener("click", () => {
+        mainNav.classList.remove("nav-open");
+        hamburgerBtn.classList.remove("is-active");
+        hamburgerBtn.setAttribute("aria-expanded", "false");
+
+        // Active-Status optisch setzen
+        navLinks.forEach((l) => l.classList.remove("active"));
+        link.classList.add("active");
+      });
+    });
+
+    // Dummy JS-Funktion für den Call-to-Action
+    function callNow() {
+      // Hier kannst du deine echte Telefonnummer einsetzen:
+      window.location.href = "tel:001122334455";
+    }
+  </script>
 </body>
 </html>
